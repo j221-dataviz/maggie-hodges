@@ -110,3 +110,17 @@ health_service_coverage <- read_csv("health_service_coverage.csv") %>%
 prim_infert_health_service_cov <- left_join(primary_infertility, health_service_coverage, by=c("country"))
 
 write_csv(prim_infert_health_service_cov, "prim_infert_health_service_cov.csv", na="")
+
+# import fertility file which has secondary infertility data 
+secondary_infertility <- read_csv("secondary_infertility_by_country.csv") 
+
+# import health_service_coverage
+health_service_coverage <- read_csv("health_service_coverage.csv") %>%
+  select(1, 2, 3) %>%
+  mutate(year = as.integer(year)) 
+  
+#combine primary infertility and health service coverage data
+  sec_infert_health_service_cov <- left_join(secondary_infertility, health_service_coverage, by=c("country"))
+  
+write_csv(sec_infert_health_service_cov, "sec_infert_health_service_cov.csv", na="")
+  
