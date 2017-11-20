@@ -103,8 +103,36 @@ write_csv(primary_infertility_age, "primary_infertility_age.csv", na="")
 
 # import health service coverage file
 health_service_coverage <- read_csv("health_service_coverage.csv") %>%
-   select(1, 2, 3) %>%
-   mutate(year = as.integer(year)) 
+   select(1, 2, 3)
+
+names(health_service_coverage) <- c("country","year","fp_met")
+
+# filters data for most recent year after 2010
+health_service_coverage <- health_service_coverage %>%
+  mutate(year = as.integer(year)) %>%
+  filter(year > 2010 & !is.na(fp_met)) %>%
+  group_by(country) %>%
+  filter(year == max(year)) %>%
+  ungroup()
+
+
+# import health service coverage file
+health_service_coverage2 <- read_csv("health_service_coverage.csv") %>%
+  select(1, 2, 3)
+
+names(health_service_coverage2) <- c("country","year","fp_met")
+
+health_service_coverage2 <- health_service_coverage2 %>%
+  mutate(year = as.integer(year)) %>%
+  filter(year > 2010 & !is.na(fp_met)) %>%
+  mutate(diff = year - 2010) %>%
+  group_by(country) %>%
+  filter(diff == min(diff)) %>%
+  ungroup()
+
+
+
+
 
 #combine primary infertility and health service coverage data
 prim_infert_health_service_cov <- left_join(primary_infertility, health_service_coverage, by=c("country"))
@@ -120,7 +148,7 @@ health_service_coverage <- read_csv("health_service_coverage.csv") %>%
   mutate(year = as.integer(year)) 
   
 #combine primary infertility and health service coverage data
-  sec_infert_health_service_cov <- left_join(secondary_infertility, health_service_coverage, by=c("country"))
+  sec_infert_health_service_cov <- left_join(subset(secondary_infertility, year == 2010), health_service_coverage, by=c("country"))
   
 write_csv(sec_infert_health_service_cov, "sec_infert_health_service_cov.csv", na="")
   
