@@ -8,6 +8,7 @@ library(readr)
 library(stringr)
 library(readxl)
 library(ggplot2)
+library(ggiraph)
 
 # get data
 fert <- read_csv("data/original_fertility_data.csv")
@@ -178,6 +179,7 @@ prim_sec_infertility <- left_join(primary_infertility,secondary_infertility, by=
 
 write_csv(prim_sec_infertility, "prim_sec_infertility.csv", na="")
 
+
 #Used excel to add in a total_infertility column, then re-imported data
 prim_sec_infertility <- read_csv("prim_sec_infertility.csv") 
    names(prim_sec_infertility) <- c("iso2c", "country","year","gdp_percap", "child_mortality", "fertil_rate", "iso3c", "region", "capital", "longitude", "latitude", "income", "lending", "total population women aged 20-44", "primary_infertility_rate", "secondary_infertility_rate", "total_infertility")
@@ -204,8 +206,6 @@ prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, 
   ylab("Infertility Rate") +
   theme(legend.position = "bottom") 
 
-library(ggiraph)
-geom_point(size = 3, alpha = 0.6, aes(color = region)) +
 #stacked bar chart, primary and secondary infertility by region
 
 # import regional infertility average file
