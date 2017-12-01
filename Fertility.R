@@ -1,5 +1,7 @@
 #install World Bank package
 install.packages('WDI')
+#install Waffle
+install.packages("waffle")
 
 # load required packages
 library(WDI)
@@ -11,6 +13,7 @@ library(ggplot2)
 library(ggiraph)
 library(htmlwidgets)
 library(tidyr)
+library(waffle)
 
 # get data
 fert <- read_csv("data/original_fertility_data.csv")
@@ -70,7 +73,6 @@ secondary_infertility <- secondary_infertility %>%
 # write to csv
 
 
-
 write_csv(fertility, "data/fertility_prim_infert_by_country.csv", na="")
 write_csv(secondary_infertility, "data/secondary_infertility_by_country.csv", na="")
 
@@ -117,7 +119,10 @@ health_service_coverage <- health_service_coverage %>%
   filter(year == max(year)) %>%
   ungroup()
 
-# not sure what the next bit is doing?
+
+
+# the code below is a second option for the code immediately above, which selects for the
+# years closest to 2010 (the only year for which we have infertility data we're merging with)
 
 # # import health service coverage file
 # health_service_coverage2 <- read_csv("health_service_coverage.csv") %>%
@@ -210,7 +215,7 @@ prim_sec_infertility_chart +
 
 prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, y = total_infertility_rate)) + 
   geom_smooth(method = lm, se = FALSE, color = "black", linetype = "dotdash", size = 0.3) +
-  scale_fill_brewer(palette = "Accent", name = "") +
+  scale_fill_brewer(palette = "Set1", name = "") +
   geom_point_interactive(shape = 21, size = 2.5, alpha = 0.5, color= "black", aes(tooltip = country, fill=region.x)) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
   xlab("Birth Rate") +
@@ -224,14 +229,6 @@ saveWidget(prim_sec_infertility_interactive, "fert_infert.html", selfcontained =
 
 
 #stacked bar chart, primary and secondary infertility by region
-# 
-# # import regional infertility average file
-# prim_sec_region <- read_csv("data/prim_sec_infertility_region.csv") %>%
-#   select(18, 19, 20, 21)
-
-# names(prim_sec_region) <- c("prim_avg","sec_avg","total_avg", "region")
-# 
-# write_csv(prim_sec_region, "prim_sec_infertility_region.csv", na="")
 
 infert_regions <- prim_sec_infertility %>%
   mutate(total_primary = women20_44*primary_infertility_rate,
@@ -244,7 +241,6 @@ infert_regions <- prim_sec_infertility %>%
          Secondary = total_secondary/women20_44) %>%
   select(1,5,6) %>%
   gather(type,rate,-region.x)
-
 
 
 #stacked bar chart, primary and secondary infertility by region
@@ -262,3 +258,72 @@ prim_sec_stackedbar <- ggplot(infert_regions, aes(x = region.x, y = rate, fill =
   ggtitle("Primary and Secondary Infertility by Region") +
   coord_flip()
   
+legend.position = "bottom",
+# scatter plot of relationship between access to family planning services and secondary infertility
+
+sec_inf_fp_chart <- ggplot(sec_infert_health_service_cov, aes(x = fp_met, y = secondary_infertility_rate)) + 
+  geom_smooth(method = lm, se = FALSE, color = "black", linetype = "dotdash", size = 0.3) +
+  scale_fill_brewer(palette = "Set1", name = "") +
+  geom_point_interactive(shape = 21, size = 2.5, alpha = 0.5, color= "black", aes(tooltip = country, fill=region)) +
+  theme_minimal(base_size = 12, base_family = "Georgia") +
+  xlab("Access to Family Planning Services (%)") +
+  ylab("Secondary Infertility Rate") +
+  theme(legend.position = "bottom") 
+
+sec_inf_fp_interactive <- ggiraph(code = print(sec_inf_fp_chart), height_svg=4)
+
+# save chart as a web page
+saveWidget(sec_inf_fp_interactive, "sec_inf_fp.html", selfcontained = TRUE, libdir = NULL, background = "white")
+  
+#create bar chart of regional STI prevalance
+
+# import regional STI prevalence file
+regional_sti_prevalence <- read_excel("data/regional_sti_prevalence.xlsx", sheet=1) %>%
+  select(1, 2) 
+
+names(regional_sti_prevalence) <- c("region","total_sti")
+
+sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = region, y = total_sti, fill = region)) + 
+  scale_fill_brewer(palette = "Set1", name = "") +
+  geom_bar(stat = "identity", 
+           color = "#888888", 
+           alpha = 0.6) +
+  theme_minimal(base_size = 12, base_family = "Georgia") +
+  xlab("Region") +
+  ylab("Incidence of STIs per 1,000 people") +
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank()) +
+  ggtitle("Prevalence of Sexually Transmitted Infections by Region") +
+  coord_flip()
+
+#create bar chart of regional violence against women rates
+
+# import regional intimate partner violence rates file
+intimate_partner_violence <- read_csv("data/intimate_partner_violence.csv") %>%
+  select(1, 2) 
+
+ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = region, y = intimate_partner_violence_rate, fill = region)) + 
+  scale_fill_brewer(palette = "Set1", name = "") +
+  geom_bar(stat = "identity", 
+           color = "#888888",
+           fill = "#CCCCCC",
+           alpha = 0.6) +  
+  theme_minimal(base_size = 10, base_family = "Georgia") +
+  xlab("Region") +
+  ylab("Intimate Partner Violence Against Females (%)") +
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank()) +
+  ggtitle("Intimate Partner Violence Against Women by Region") +
+  coord_flip()
+
+#create waffle chart showing composition of infertility cases by gender in couples
+
+parts <- c(50,25,25)
+waffle(parts, row=5,
+               size=1,
+               title = "",
+               xlab = NULL,
+               pad = 5) +
+  theme(text=element_text(size=16, family="Proxima Nova Semibold"),
+        legend.position="right")
+

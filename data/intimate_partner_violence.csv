@@ -1,26 +1,23 @@
-"","Intimate partner violence prevalence among ever partnered women (%)"
-""," Female"
-""," 2010"
-"GBD Region"," 15-69  (total) years"
-"Asia Pacific, High-income","28.5 [20.6-36.3]"
-"Asia, Central","22.9 [15.8-30]"
-"Asia, East","16.3 [8.9-23.7]"
-"Asia, South","41.7 [36.3-47.2]"
-"Asia, Southeast","28 [23.7-32.2]"
-"Australasia","28.3 [22.7-33.9]"
-"Caribbean","27.1 [20.8-33.3]"
-"Europe, Central","27.8 [22.7-33]"
-"Europe, Eastern","26.1 [20.6-31.6]"
-"Europe, Western","19.3 [15.9-22.7]"
-"Latin America, Andean","40.6 [34.8-46.5]"
-"Latin America, Central","29.5 [24.6-34.4]"
-"Latin America, Southern","23.7 [12.8-34.5]"
-"Latin America, Tropical","27.4 [20.7-34.2]"
-"North Africa/Middle East","35.4 [30.4-40.3]"
-"North America, High-income","21.3 [16.2-26.4]"
-"Oceania","35.3 [23.8-46.7]"
-"Sub-Saharan Africa, Central","65.6 [53.6-77.7]"
-"Sub-Saharan Africa, East","38.8 [34.6-43.1]"
-"Sub-Saharan Africa, Southern","29.7 [24.3-35.1]"
-"Sub-Saharan Africa, West","41.7 [32.9-50.6]"
-"WORLD","30 [27.8-32.2]"
+region,intimate_partner_violence_rate,confidence_interval
+"Asia, Pacific",28.5,20.6-36.3
+"Asia, Central",22.9,15.8-30
+"Asia, East",16.3,8.9-23.7
+"Asia, South",41.7,36.3-47.2
+"Asia, Southeast",28,23.7-32.2
+Australasia,28.3,22.7-33.9
+Caribbean,27.1,20.8-33.3
+"Europe, Central",27.8,22.7-33
+"Europe, Eastern",26.1,20.6-31.6
+"Europe, Western",19.3,15.9-22.7
+"Latin America, Andean",40.6,34.8-46.5
+"Latin America, Central",29.5,24.6-34.4
+"Latin America, Southern",23.7,12.8-34.5
+"Latin America, Tropical",27.4,20.7-34.2
+North Africa/Middle East,35.4,30.4-40.3
+North America,21.3,16.2-26.4
+Oceania,35.3,23.8-46.7
+"Sub-Saharan Africa, Central",65.6,53.6-77.7
+"Sub-Saharan Africa, East",38.8,34.6-43.1
+"Sub-Saharan Africa, Southern",29.7,24.3-35.1
+"Sub-Saharan Africa, West",41.7,32.9-50.6
+World,30,27.8-32.2
