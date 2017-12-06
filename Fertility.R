@@ -242,7 +242,6 @@ infert_regions <- prim_sec_infertility %>%
 
 #stacked bar chart, primary and secondary infertility by region
 
-prim_sec_stackedbar <- ggplot(infert_regions, aes(x = region.x, y = rate, fill = type)) + 
   scale_fill_brewer(palette = "Set1", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888", 
@@ -318,6 +317,7 @@ ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = region, y = intimate_
   theme(legend.position = "none",
         panel.grid.major.y = element_blank()) +
   ggtitle("Intimate Partner Violence Against Women by Region") +
+  # ggtitle("Intimate Partner Violence Against Women by Region") + 
   coord_flip()
 
 #create waffle chart showing composition of infertility cases by gender in couples
