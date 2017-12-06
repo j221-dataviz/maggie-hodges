@@ -121,7 +121,6 @@ health_service_coverage <- health_service_coverage %>%
   ungroup()
 
 
-
 # the code below is a second option for the code immediately above, which selects for the
 # years closest to 2010 (the only year for which we have infertility data we're merging with)
 
@@ -193,21 +192,15 @@ prim_sec_infertility <- left_join(primary_infertility,secondary_infertility, by=
 # 
 # write_csv(prim_sec_infertility, "prim_sec_infertility.csv", na="")
 # 
-# 
-# create scatter plot of relationship between fertility and infertility
-prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, y = total_infertility_rate, color = region.x)) + 
-  scale_color_brewer(palette = "Accent", name = "") +
-  geom_point(size = 1.5, alpha =0.6) +
-  theme_minimal(base_size = 12, base_family = "Georgia") +
-  xlab("Birth Rate") +
-  ylab("Infertility Rate") +
-  theme(legend.position = "bottom") 
-  
-# add a trend line
-prim_sec_infertility_chart +
-  geom_smooth(method = lm, se = FALSE, color = "black", linetype = "dotdash", size = 0.3) 
 
-# making it interactive
+
+# #Used excel to add in a total_infertility column, then re-imported data
+# prim_sec_infertility <- read_csv("prim_sec_infertility.csv") 
+
+# names(prim_sec_infertility) <- c("iso2c", "country","year","gdp_percap", "child_mortality", "fertil_rate", "iso3c", "region", "capital", "longitude", "latitude", "income", "lending", "total population women aged 20-44", "primary_infertility_rate", "secondary_infertility_rate", "total_infertility")
+
+
+# making interactive scatter plot of relationship between fertility and infertility
 
 prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, y = total_infertility_rate)) + 
   geom_smooth(method = lm, se = FALSE, color = "black", linetype = "dotdash", size = 0.3) +
@@ -217,7 +210,8 @@ prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, 
   xlab("Birth Rate") +
   ylab("Infertility Rate") +
   theme(legend.position = "bottom") +
-  guides(guide_legend(ncol=3))
+  guides(guide_legend(ncol=3)) +
+  guides(fill=guide_legend(ncol=2)) 
 
 prim_sec_infertility_interactive <- ggiraph(code = print(prim_sec_infertility_chart), height_svg=4)
 
@@ -242,29 +236,32 @@ infert_regions <- prim_sec_infertility %>%
 
 #stacked bar chart, primary and secondary infertility by region
 
-  scale_fill_brewer(palette = "Set1", name = "") +
+prim_sec_stackedbar <- ggplot(infert_regions, aes(x = reorder(region.x,rate), y = rate, fill = type)) + 
+  scale_fill_brewer(palette="Accent", name = "") +
   geom_bar(stat = "identity", 
-           color = "#888888", 
-           alpha = 0.5) +
-  theme_minimal(base_size = 12, base_family = "Georgia") +
-  xlab("Region") +
+           color = "#888888") +
+  theme_minimal(base_size = 13, base_family = "Georgia") +
+  xlab("") +
   ylab("Infertility Rate") +
   theme(legend.position = "bottom",
         panel.grid.major.y = element_blank()) +
-  ggtitle("Primary and Secondary Infertility by Region") +
+  # ggtitle("Primary and Secondary Infertility by Region") +
   coord_flip()
+
   
-legend.position = "bottom",
 # scatter plot of relationship between access to family planning services and secondary infertility
 
 sec_inf_fp_chart <- ggplot(sec_infert_health_service_cov, aes(x = fp_met, y = secondary_infertility_rate)) + 
   geom_smooth(method = lm, se = FALSE, color = "black", linetype = "dotdash", size = 0.3) +
   scale_fill_brewer(palette = "Set1", name = "") +
-  geom_point_interactive(shape = 21, size = 2.5, alpha = 0.5, color= "black", aes(tooltip = country, fill=region)) +
+  geom_point_interactive(shape = 21, size = 2.5, alpha = 0.6, color= "black", aes(tooltip = country, fill=region)) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
   xlab("Access to Family Planning Services (%)") +
   ylab("Secondary Infertility Rate") +
-  theme(legend.position = "bottom") 
+  guides(col = guide_legend(ncol = 3)) +
+  theme(legend.position = "bottom") +
+  guides(fill=guide_legend(ncol=2)) 
+  
 
 sec_inf_fp_interactive <- ggiraph(code = print(sec_inf_fp_chart), height_svg=4)
 
@@ -286,37 +283,56 @@ regional_sti_prevalence$region <- as.factor(regional_sti_prevalence$region)
 # regional_sti_prevalence$region <- fct_reorder(regional_sti_prevalence$region, c("Sub-Saharan Africa","South and Southeast Asia","Latin America and Caribbean","Eastern Europe and Central Asia","Australia and New Zealand","North America","Western Europe","North Africa and Middle East","East Asia and Pacific"))
 
 sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = region, y = total_sti, fill = region)) + 
-  scale_fill_brewer(palette = "Set1", name = "") +
+# Clean and create order factor for region - However, you don't need this if you reorder the bars by values, see below)
+# regional_sti_prevalence$region <- str_trim(regional_sti_prevalence$region)
+# regional_sti_prevalence$region <- as.factor(regional_sti_prevalence$region)
+# regional_sti_prevalence$region <- fct_relevel(regional_sti_prevalence$region, c("East Asia and Pacific",
+#                                                                                 "North Africa and Middle East",
+#                                                                                 "Western Europe",
+#                                                                                 "North America",
+#                                                                                 "Australia and New Zealand",
+#                                                                                 "Eastern Europe and Central Asia",
+#                                                                                 "Latin America and Caribbean",
+#                                                                                 "South and Southeast Asia",
+#                                                                                 "Sub-Saharan Africa"))
+
+sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = reorder(region, total_sti), total_sti, fill = region)) + 
+  scale_fill_brewer(palette = "Blues", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888", 
-           alpha = 0.6) +
+           alpha = 0.9) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
   xlab("") +
   ylab("Incidence of STIs per 1,000 people") +
   theme(legend.position = "none",
         panel.grid.major.y = element_blank(), 
         plot.title =  element_text(hjust= -0.45, size = 12)) +
-  ggtitle("Region") +
+  #ggtitle("Region") +
+  ylab("Prevalence of STIs per 1,000 people") + # prevalence, yes? You had incidence, which is not the same
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank()
+        ) +
+  # ggtitle("Prevalence of Sexually Transmitted Infections by Region") +
   coord_flip()
 
 #create bar chart of regional violence against women rates
 
-# import regional intimate partner violence rates file
+# create bar chart of intimate partner violence by region
 intimate_partner_violence <- read_csv("data/intimate_partner_violence.csv") %>%
   select(1, 2) 
 
-ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = region, y = intimate_partner_violence_rate, fill = region)) + 
+ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = reorder(region, intimate_partner_violence_rate), y = intimate_partner_violence_rate, fill = region)) + 
   scale_fill_brewer(palette = "Set1", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888",
-           fill = "#CCCCCC",
-           alpha = 0.6) +  
+           width = 0.75,
+           fill = "violetred4",
+           alpha = 0.8) +  
   theme_minimal(base_size = 10, base_family = "Georgia") +
-  xlab("Region") +
-  ylab("Intimate Partner Violence Against Females (%)") +
+  xlab("") +
+  ylab("Intimate Partner Violence Against Women (%)") +
   theme(legend.position = "none",
         panel.grid.major.y = element_blank()) +
-  ggtitle("Intimate Partner Violence Against Women by Region") +
   # ggtitle("Intimate Partner Violence Against Women by Region") + 
   coord_flip()
 
@@ -324,11 +340,15 @@ ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = region, y = intimate_
 
 parts <-  c("female"=50,"male"=25,"combination"=25)
 
-waffle(parts, row=5,
-       size=1,
-               title = "",
-               xlab = NULL,
-               pad = 5) +
+parts <- c("Female"=50,"Male"=25,"Combined"=25)
+waffle(parts, 
+       row=5,
+       colors=c("sandybrown", "turquoise3", "gray"),
+       size=0.5,
+       title = "",
+       xlab = NULL,
+       pad = 0) +
   theme(text=element_text(size=16, family="Georgia"),
-        legend.position="right")
+        legend.position="bottom")
+
 
