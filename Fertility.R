@@ -14,6 +14,7 @@ library(ggiraph)
 library(htmlwidgets)
 library(tidyr)
 library(waffle)
+library(forcats)
 
 # get data
 fert <- read_csv("data/original_fertility_data.csv")
@@ -193,11 +194,6 @@ prim_sec_infertility <- left_join(primary_infertility,secondary_infertility, by=
 # write_csv(prim_sec_infertility, "prim_sec_infertility.csv", na="")
 # 
 # 
-# #Used excel to add in a total_infertility column, then re-imported data
-# prim_sec_infertility <- read_csv("prim_sec_infertility.csv") 
-
-# names(prim_sec_infertility) <- c("iso2c", "country","year","gdp_percap", "child_mortality", "fertil_rate", "iso3c", "region", "capital", "longitude", "latitude", "income", "lending", "total population women aged 20-44", "primary_infertility_rate", "secondary_infertility_rate", "total_infertility")
-
 # create scatter plot of relationship between fertility and infertility
 prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, y = total_infertility_rate, color = region.x)) + 
   scale_color_brewer(palette = "Accent", name = "") +
@@ -220,7 +216,8 @@ prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, 
   theme_minimal(base_size = 12, base_family = "Georgia") +
   xlab("Birth Rate") +
   ylab("Infertility Rate") +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom") +
+  guides(guide_legend(ncol=3))
 
 prim_sec_infertility_interactive <- ggiraph(code = print(prim_sec_infertility_chart), height_svg=4)
 
@@ -283,17 +280,24 @@ regional_sti_prevalence <- read_excel("data/regional_sti_prevalence.xlsx", sheet
 
 names(regional_sti_prevalence) <- c("region","total_sti")
 
+str(regional_sti_prevalence)
+
+regional_sti_prevalence$region <- as.factor(regional_sti_prevalence$region)
+
+# regional_sti_prevalence$region <- fct_reorder(regional_sti_prevalence$region, c("Sub-Saharan Africa","South and Southeast Asia","Latin America and Caribbean","Eastern Europe and Central Asia","Australia and New Zealand","North America","Western Europe","North Africa and Middle East","East Asia and Pacific"))
+
 sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = region, y = total_sti, fill = region)) + 
   scale_fill_brewer(palette = "Set1", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888", 
            alpha = 0.6) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
-  xlab("Region") +
+  xlab("") +
   ylab("Incidence of STIs per 1,000 people") +
   theme(legend.position = "none",
-        panel.grid.major.y = element_blank()) +
-  ggtitle("Prevalence of Sexually Transmitted Infections by Region") +
+        panel.grid.major.y = element_blank(), 
+        plot.title =  element_text(hjust= -0.45, size = 12)) +
+  ggtitle("Region") +
   coord_flip()
 
 #create bar chart of regional violence against women rates
@@ -318,12 +322,13 @@ ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = region, y = intimate_
 
 #create waffle chart showing composition of infertility cases by gender in couples
 
-parts <- c(50,25,25)
+parts <-  c("female"=50,"male"=25,"combination"=25)
+
 waffle(parts, row=5,
-               size=1,
+       size=1,
                title = "",
                xlab = NULL,
                pad = 5) +
-  theme(text=element_text(size=16, family="Proxima Nova Semibold"),
+  theme(text=element_text(size=16, family="Georgia"),
         legend.position="right")
 
