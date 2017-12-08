@@ -207,7 +207,7 @@ prim_sec_infertility_chart <- ggplot(prim_sec_infertility, aes(x = fertil_rate, 
   scale_fill_brewer(palette = "Set1", name = "") +
   geom_point_interactive(shape = 21, size = 2.5, alpha = 0.5, color= "black", aes(tooltip = country, fill=region.x)) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
-  xlab("Birth Rate") +
+  xlab("Fertility Rate") +
   ylab("Infertility Rate") +
   theme(legend.position = "bottom") +
   guides(guide_legend(ncol=3)) +
@@ -237,10 +237,10 @@ infert_regions <- prim_sec_infertility %>%
 #stacked bar chart, primary and secondary infertility by region
 
 prim_sec_stackedbar <- ggplot(infert_regions, aes(x = reorder(region.x,rate), y = rate, fill = type)) + 
-  scale_fill_brewer(palette="Accent", name = "") +
+  scale_fill_brewer(palette="Set3", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888") +
-  theme_minimal(base_size = 13, base_family = "Georgia") +
+  theme_minimal(base_size = 14, base_family = "Georgia") +
   xlab("") +
   ylab("Infertility Rate") +
   theme(legend.position = "bottom",
@@ -256,7 +256,7 @@ sec_inf_fp_chart <- ggplot(sec_infert_health_service_cov, aes(x = fp_met, y = se
   scale_fill_brewer(palette = "Set1", name = "") +
   geom_point_interactive(shape = 21, size = 2.5, alpha = 0.6, color= "black", aes(tooltip = country, fill=region)) +
   theme_minimal(base_size = 12, base_family = "Georgia") +
-  xlab("Access to Family Planning Services (%)") +
+  xlab("Women Married or In Union With Family Planning Needs Met (%)") +
   ylab("Secondary Infertility Rate") +
   guides(col = guide_legend(ncol = 3)) +
   theme(legend.position = "bottom") +
@@ -297,18 +297,18 @@ sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = region, y = total_sti, 
 #                                                                                 "Sub-Saharan Africa"))
 
 sti_bar_chart <- ggplot(regional_sti_prevalence, aes(x = reorder(region, total_sti), total_sti, fill = region)) + 
-  scale_fill_brewer(palette = "Blues", name = "") +
+  scale_fill_brewer(palette = "Set3", name = "") +
   geom_bar(stat = "identity", 
            color = "#888888", 
-           alpha = 0.9) +
-  theme_minimal(base_size = 12, base_family = "Georgia") +
+           alpha = 0.6) +
+  theme_minimal(base_size = 14, base_family = "Georgia") +
   xlab("") +
   ylab("Incidence of STIs per 1,000 people") +
   theme(legend.position = "none",
         panel.grid.major.y = element_blank(), 
         plot.title =  element_text(hjust= -0.45, size = 12)) +
   #ggtitle("Region") +
-  ylab("Prevalence of STIs per 1,000 people") + # prevalence, yes? You had incidence, which is not the same
+  ylab("Incidence of STIs per 1,000 people") + 
   theme(legend.position = "none",
         panel.grid.major.y = element_blank()
         ) +
@@ -328,7 +328,7 @@ ipv_bar_chart <- ggplot(intimate_partner_violence, aes(x = reorder(region, intim
            width = 0.75,
            fill = "violetred4",
            alpha = 0.8) +  
-  theme_minimal(base_size = 10, base_family = "Georgia") +
+  theme_minimal(base_size = 14, base_family = "Georgia") +
   xlab("") +
   ylab("Intimate Partner Violence Against Women (%)") +
   theme(legend.position = "none",
